@@ -11,8 +11,11 @@ public interface UserService {
 
 	String validateUser(String email, String password);
 
+	List<Users> allUsers();
+
+	String userDelete(Long id);
+
 	String updateUser(Long userId, UserDto userDto);
 
-	List<Users> allUsers();
 
 }

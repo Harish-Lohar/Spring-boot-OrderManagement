@@ -21,25 +21,28 @@ public class UserSerciveImpl implements UserService {
 
 	@Override
 	public String saveUser(UserDto userDto) {
+		int max = 10000000;
+		int min = 20000000;
+		Long a = (long) (Math.random() * (max - min + 1) + min);
 		Users users = new Users();
 		Optional<Users> id =userRepository.findByUserId(userDto.getUserId());
 		if (!id.isPresent()) {
-			
+			users.setUserId(a);
 		}else {
-			return "Email Already Exist...";
+			return "UserID Already Exist...";
 		}
-		users.setPersoneName(userDto.getPersoneName());
-		users.setAddress(userDto.getAddress());
 		
 		Optional<Users> email = Optional.ofNullable(userRepository.findByEmail(userDto.getEmail()));
 		if (!email.isPresent()) {
 			users.setEmail(userDto.getEmail());
 		}else {
-			return "Email Already Exist...";			
+			return "Email Already Exist...";		
 		}
 
 		Optional<Users> contact = userRepository.findByContact(userDto.getContact());
 		if (!contact.isPresent()) {
+			users.setPersoneName(userDto.getPersoneName());
+			users.setAddress(userDto.getAddress());
 			users.setContact(userDto.getContact());
 			users.setEmail(userDto.getEmail());
 			users.setPassword(userDto.getPassword());
@@ -56,32 +59,34 @@ public class UserSerciveImpl implements UserService {
 		Users users =userRepository.findByEmail(email);
 		if (password.equals(users.getPassword())) {
 			return "Login Successful...";
-			
 		} else {
-
 			return "Login Failed...";
 		}
-		
+	}		
+
+	@Override
+	public List<Users> allUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
+	public String userDelete(Long id) {
+		userRepository.deleteById(id);
+		return  "User Deleted Successfully...";
 	}
 
 	@Override
 	public String updateUser(Long userId, UserDto userDto) {
-		Optional<Users> name = userRepository.findByUserId(userId);
-		if (name.isPresent()) {
-			Users users = userRepository.getByContact(userDto.getContact());
-			users.setAddress(users.getAddress());
-			users.setPersoneName(users.getPersoneName());
-			users.setPassword(users.getPassword());
+		Optional<Users> id1 = userRepository.findByUserId(userId);
+		if (id1.isPresent()) {
+			Users users= userRepository.getByUserId(userId);
+			users.setAddress(userDto.getAddress());
+			users.setPersoneName(userDto.getPersoneName());
+			users.setPassword(userDto.getPassword());
 			userRepository.save(users);
 			return "User Data update Successfully...";
 		} else {
 			return "User Not Exist...";
 		}
-	}
-
-	@Override
-	public List<Users> allUsers() {
-		
-		return userRepository.findAll();
 	}
 }

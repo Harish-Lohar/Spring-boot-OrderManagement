@@ -13,6 +13,4 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
 	Order getByTokenNumber(int tokenNumber);
 
 	void deleteByTokenNumber(int tokenNumber);
-
-	
 }

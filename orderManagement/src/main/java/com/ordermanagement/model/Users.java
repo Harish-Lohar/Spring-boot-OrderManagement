@@ -11,6 +11,7 @@ public class Users {
 	
 	@Id
 	@GeneratedValue
+	private Long id;
 	private Long userId;
 	private String personeName;
 	private Long contact;
