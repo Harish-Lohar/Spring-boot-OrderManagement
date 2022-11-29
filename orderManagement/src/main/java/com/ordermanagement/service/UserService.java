@@ -1,5 +1,6 @@
 package com.ordermanagement.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.ordermanagement.dto.UserDto;
@@ -16,6 +17,14 @@ public interface UserService {
 	String userDelete(Long id);
 
 	String updateUser(Long userId, UserDto userDto);
+
+	Collection<String> getAllUsers();
+
+	
+
+	
+
+
 
 
 }

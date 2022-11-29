@@ -1,6 +1,8 @@
 package com.ordermanagement.controller;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +50,15 @@ public class UserController {
 	@DeleteMapping("/deleteuser/{id}")
 	public String deleteuser(@PathVariable("id") Long id ) {
 		return userService.userDelete(id);
+	}
+	
+	// Email
+	@GetMapping("/getemails")
+	public Collection<String> getAllEmails()
+	{
+//		List<String> emaiList=userService.getAllUsers().stream().map(x-> x.getEmail()).collect(Collectors.toList());
+		
+		return userService.getAllUsers();
 	}
 	
 }

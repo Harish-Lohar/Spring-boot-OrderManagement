@@ -1,7 +1,12 @@
 package com.ordermanagement.serviceImpl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,18 +30,18 @@ public class UserSerciveImpl implements UserService {
 		int min = 20000000;
 		Long a = (long) (Math.random() * (max - min + 1) + min);
 		Users users = new Users();
-		Optional<Users> id =userRepository.findByUserId(userDto.getUserId());
+		Optional<Users> id = userRepository.findByUserId(userDto.getUserId());
 		if (!id.isPresent()) {
 			users.setUserId(a);
-		}else {
+		} else {
 			return "UserID Already Exist...";
 		}
-		
+
 		Optional<Users> email = Optional.ofNullable(userRepository.findByEmail(userDto.getEmail()));
 		if (!email.isPresent()) {
 			users.setEmail(userDto.getEmail());
-		}else {
-			return "Email Already Exist...";		
+		} else {
+			return "Email Already Exist...";
 		}
 
 		Optional<Users> contact = userRepository.findByContact(userDto.getContact());
@@ -56,13 +61,13 @@ public class UserSerciveImpl implements UserService {
 
 	@Override
 	public String validateUser(String email, String password) {
-		Users users =userRepository.findByEmail(email);
+		Users users = userRepository.findByEmail(email);
 		if (password.equals(users.getPassword())) {
 			return "Login Successful...";
 		} else {
 			return "Login Failed...";
 		}
-	}		
+	}
 
 	@Override
 	public List<Users> allUsers() {
@@ -72,14 +77,14 @@ public class UserSerciveImpl implements UserService {
 	@Override
 	public String userDelete(Long id) {
 		userRepository.deleteById(id);
-		return  "User Deleted Successfully...";
+		return "User Deleted Successfully...";
 	}
 
 	@Override
 	public String updateUser(Long userId, UserDto userDto) {
 		Optional<Users> id1 = userRepository.findByUserId(userId);
 		if (id1.isPresent()) {
-			Users users= userRepository.getByUserId(userId);
+			Users users = userRepository.getByUserId(userId);
 			users.setAddress(userDto.getAddress());
 			users.setPersoneName(userDto.getPersoneName());
 			users.setPassword(userDto.getPassword());
@@ -89,4 +94,21 @@ public class UserSerciveImpl implements UserService {
 			return "User Not Exist...";
 		}
 	}
+
+	@Override
+	public Collection<String> getAllUsers() {
+		Collection<String> emaiList=userRepository.findAll().stream().map(x-> x.getEmail()).collect(Collectors.toList());
+		
+		Iterator<String> itr=emaiList.iterator();
+		List<String> list=new ArrayList<String>();
+		while (itr.hasNext()) {
+			list.add(itr.next());
+		}
+		 Collections.reverse(list);
+		return list;
+	}
+
+	
+
+	
 }
