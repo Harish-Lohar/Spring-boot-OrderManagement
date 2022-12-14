@@ -49,16 +49,14 @@ public class UserController {
 	
 	@DeleteMapping("/deleteuser/{id}")
 	public ResponseEntity<Object> deleteuser(@PathVariable("id") Long id ) {
-		return userService.userDelete(id);
+		return userService.deleteUser(id);
 	}
 	
 	// Email
 	@GetMapping("/getemails")
 	public Collection<String> getAllEmails()
-	{
-//		List<String> emaiList=userService.getAllUsers().stream().map(x-> x.getEmail()).collect(Collectors.toList());
-		
-		return userService.getAllUsers();
+	{		
+		return userService.getAllEmails();
 	}
 	
 }

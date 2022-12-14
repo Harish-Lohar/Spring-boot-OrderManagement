@@ -2,7 +2,6 @@ package com.ordermanagement.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ordermanagement.dao.UserRepository;
@@ -26,6 +24,7 @@ public class UserSerciveImpl implements UserService {
 	@Autowired
 	UserRepository userRepository;
 
+	// Save User
 	@Override
 	public ResponseEntity<Object> saveUser(UserDto userDto) {
 		int max = 10000000;
@@ -52,8 +51,10 @@ public class UserSerciveImpl implements UserService {
 			users.setAddress(userDto.getAddress());
 			users.setContact(userDto.getContact());
 			users.setEmail(userDto.getEmail());
-			PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
-			users.setPassword(passwordEncoder.encode(userDto.getPassword()));
+			
+			//		 Encrypt Password
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+			users.setPassword(encoder.encode(userDto.getPassword()));
 			userRepository.save(users);
 			return new ResponseEntity<>("User Registration Successfully", HttpStatus.OK);
 
@@ -62,27 +63,32 @@ public class UserSerciveImpl implements UserService {
 		}
 	}
 
+//						Validate User
 	@Override
 	public ResponseEntity<Object> validateUser(String email, String password) {
-		Users users = userRepository.findByEmail(email);
-		if (password.equals(users.getPassword())) {
+		Users user = userRepository.findByEmail(email);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); 
+		if (encoder.matches(password,user.getPassword())) {
 			return new ResponseEntity<>("Login Successful...", HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>("Login Failed...", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 
+//				    	All Register Users
 	@Override
 	public List<Users> allUsers() {
 		return userRepository.findAll();
 	}
 
+//						Delete User by ID
 	@Override
-	public ResponseEntity<Object> userDelete(Long id) {
+	public ResponseEntity<Object> deleteUser(Long id) {
 		userRepository.deleteById(id);
 		return new ResponseEntity<>("User Deleted Successfully...", HttpStatus.OK);
 	}
 
+//						Update User by ID
 	@Override
 	public ResponseEntity<Object> updateUser(Long userId, UserDto userDto) {
 		Optional<Users> id1 = userRepository.findByUserId(userId);
@@ -92,19 +98,17 @@ public class UserSerciveImpl implements UserService {
 			users.setPersoneName(userDto.getPersoneName());
 			users.setPassword(userDto.getPassword());
 			userRepository.save(users);
-//			return "User Data update Successfully...";
 			return new ResponseEntity<>("User Data updated Successfully...", HttpStatus.OK);
 		} else {
-//			return "User Not Exist...";
 			return new ResponseEntity<>("User Not Exist...", HttpStatus.NOT_FOUND);
 		}
 	}
 
+//					Get All Users only Emails list
 	@Override
-	public Collection<String> getAllUsers() {
+	public Collection<String> getAllEmails() {
 		Collection<String> emaiList = userRepository.findAll().stream().map(x -> x.getEmail())
 				.collect(Collectors.toList());
-
 		Iterator<String> itr = emaiList.iterator();
 		List<String> list = new ArrayList<String>();
 		while (itr.hasNext()) {
@@ -112,5 +116,4 @@ public class UserSerciveImpl implements UserService {
 		}
 		return list;
 	}
-
 }

@@ -17,10 +17,12 @@ import com.ordermanagement.service.OrderService;
 @Transactional
 @Service
 public class OrderServiceImpl implements OrderService {
+	
 	@Autowired
 	OrderRepository orderRepository;
 	public static int ordernum = 0;
 
+	// 					Place Order
 	@Override
 	public ResponseEntity<Object> saveOrder(OrderDto orderDto) {
 		Order order = new Order();
@@ -30,14 +32,16 @@ public class OrderServiceImpl implements OrderService {
 		order.setQuantity(orderDto.getQuantity());
 		order.setPrice(orderDto.getPrice());
 		orderRepository.save(order);
-		return new ResponseEntity<>("Your " + orderDto.getOrderName() + " order Placed Successfully,Your Token ID is " + ordernum, HttpStatus.OK);
+		return new ResponseEntity<>("Your " + orderDto.getOrderName() + " order Placed Successfully , Your Token ID is " + ordernum, HttpStatus.OK);
 	}
-
+	
+	//					All Orders
 	@Override
 	public List<Order> orders() {
 		return orderRepository.findAll();
 	}
-
+	
+	//					Update Order
 	@Override
 	public ResponseEntity<Object> updateOrder(int tokenNumber, OrderDto orderDto) {
 		Optional<Order> token = orderRepository.findByTokenNumber(tokenNumber);
@@ -52,10 +56,10 @@ public class OrderServiceImpl implements OrderService {
 			return new ResponseEntity<>("Order Not Exist...", HttpStatus.NOT_FOUND);
 		}
 	}
-
+	
+	//				Cancelled Order
 	@Override
 	public ResponseEntity<Object> deleteOrder(int tokenNumber) {
-		System.out.println(tokenNumber);
 		Optional<Order> token = orderRepository.findByTokenNumber(tokenNumber);
 		System.out.println(token.isPresent());
 		if (token.isPresent()) {

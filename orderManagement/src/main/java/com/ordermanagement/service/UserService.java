@@ -16,11 +16,11 @@ public interface UserService {
 
 	List<Users> allUsers();
 
-	ResponseEntity<Object> userDelete(Long id);
-
 	ResponseEntity<Object> updateUser(Long userId, UserDto userDto);
 
-	Collection<String> getAllUsers();
+	Collection<String> getAllEmails();
+
+	ResponseEntity<Object> deleteUser(Long id);
 
 	
 
