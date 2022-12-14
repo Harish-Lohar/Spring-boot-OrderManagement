@@ -9,14 +9,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ordermanagement.dao.UserRepository;
 import com.ordermanagement.dto.UserDto;
 import com.ordermanagement.model.Users;
 import com.ordermanagement.service.UserService;
-
-import io.swagger.models.properties.EmailProperty;
 
 @Service
 public class UserSerciveImpl implements UserService {
@@ -25,7 +27,7 @@ public class UserSerciveImpl implements UserService {
 	UserRepository userRepository;
 
 	@Override
-	public String saveUser(UserDto userDto) {
+	public ResponseEntity<Object> saveUser(UserDto userDto) {
 		int max = 10000000;
 		int min = 20000000;
 		Long a = (long) (Math.random() * (max - min + 1) + min);
@@ -34,14 +36,14 @@ public class UserSerciveImpl implements UserService {
 		if (!id.isPresent()) {
 			users.setUserId(a);
 		} else {
-			return "UserID Already Exist...";
+			return new ResponseEntity<>("UserID Already Exist...", HttpStatus.ALREADY_REPORTED);
 		}
 
 		Optional<Users> email = Optional.ofNullable(userRepository.findByEmail(userDto.getEmail()));
 		if (!email.isPresent()) {
 			users.setEmail(userDto.getEmail());
 		} else {
-			return "Email Already Exist...";
+			return new ResponseEntity<>("Email Already Exist...", HttpStatus.ALREADY_REPORTED);
 		}
 
 		Optional<Users> contact = userRepository.findByContact(userDto.getContact());
@@ -50,22 +52,23 @@ public class UserSerciveImpl implements UserService {
 			users.setAddress(userDto.getAddress());
 			users.setContact(userDto.getContact());
 			users.setEmail(userDto.getEmail());
-			users.setPassword(userDto.getPassword());
+			PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+			users.setPassword(passwordEncoder.encode(userDto.getPassword()));
 			userRepository.save(users);
-			return "User Registration Successfully";
+			return new ResponseEntity<>("User Registration Successfully", HttpStatus.OK);
 
 		} else {
-			return "Contact Already Exist...";
+			return new ResponseEntity<>("Contact Already Exist...", HttpStatus.ALREADY_REPORTED);
 		}
 	}
 
 	@Override
-	public String validateUser(String email, String password) {
+	public ResponseEntity<Object> validateUser(String email, String password) {
 		Users users = userRepository.findByEmail(email);
 		if (password.equals(users.getPassword())) {
-			return "Login Successful...";
+			return new ResponseEntity<>("Login Successful...", HttpStatus.OK);
 		} else {
-			return "Login Failed...";
+			return new ResponseEntity<>("Login Failed...", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 
@@ -75,13 +78,13 @@ public class UserSerciveImpl implements UserService {
 	}
 
 	@Override
-	public String userDelete(Long id) {
+	public ResponseEntity<Object> userDelete(Long id) {
 		userRepository.deleteById(id);
-		return "User Deleted Successfully...";
+		return new ResponseEntity<>("User Deleted Successfully...", HttpStatus.OK);
 	}
 
 	@Override
-	public String updateUser(Long userId, UserDto userDto) {
+	public ResponseEntity<Object> updateUser(Long userId, UserDto userDto) {
 		Optional<Users> id1 = userRepository.findByUserId(userId);
 		if (id1.isPresent()) {
 			Users users = userRepository.getByUserId(userId);
@@ -89,26 +92,25 @@ public class UserSerciveImpl implements UserService {
 			users.setPersoneName(userDto.getPersoneName());
 			users.setPassword(userDto.getPassword());
 			userRepository.save(users);
-			return "User Data update Successfully...";
+//			return "User Data update Successfully...";
+			return new ResponseEntity<>("User Data updated Successfully...", HttpStatus.OK);
 		} else {
-			return "User Not Exist...";
+//			return "User Not Exist...";
+			return new ResponseEntity<>("User Not Exist...", HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@Override
 	public Collection<String> getAllUsers() {
-		Collection<String> emaiList=userRepository.findAll().stream().map(x-> x.getEmail()).collect(Collectors.toList());
-		
-		Iterator<String> itr=emaiList.iterator();
-		List<String> list=new ArrayList<String>();
+		Collection<String> emaiList = userRepository.findAll().stream().map(x -> x.getEmail())
+				.collect(Collectors.toList());
+
+		Iterator<String> itr = emaiList.iterator();
+		List<String> list = new ArrayList<String>();
 		while (itr.hasNext()) {
 			list.add(itr.next());
 		}
-		 Collections.reverse(list);
 		return list;
 	}
 
-	
-
-	
 }

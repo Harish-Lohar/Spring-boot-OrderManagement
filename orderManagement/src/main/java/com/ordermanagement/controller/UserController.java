@@ -2,9 +2,9 @@ package com.ordermanagement.controller;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,13 +31,13 @@ public class UserController {
 	}
 	
 	@GetMapping("/login/{email},{password}")
-	public String login (@PathVariable("email") String email,@PathVariable("password") String password){
+	public ResponseEntity<Object> login (@PathVariable("email") String email,@PathVariable("password") String password){
 		
 		return userService.validateUser(email,password);
 	}
 	
 	@PutMapping("/updateuser/{userId}")
-	public String updateUser(@PathVariable("userId") Long userId,@RequestBody UserDto userDto) 
+	public ResponseEntity<Object> updateUser(@PathVariable("userId") Long userId,@RequestBody UserDto userDto) 
 	{
 		return userService.updateUser(userId,userDto);
 	}
@@ -48,7 +48,7 @@ public class UserController {
 	}
 	
 	@DeleteMapping("/deleteuser/{id}")
-	public String deleteuser(@PathVariable("id") Long id ) {
+	public ResponseEntity<Object> deleteuser(@PathVariable("id") Long id ) {
 		return userService.userDelete(id);
 	}
 	

@@ -3,20 +3,22 @@ package com.ordermanagement.service;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
 import com.ordermanagement.dto.UserDto;
 import com.ordermanagement.model.Users;
 
 public interface UserService {
 
-	String saveUser(UserDto userDto);
+	ResponseEntity<Object> saveUser(UserDto userDto);
 
-	String validateUser(String email, String password);
+	ResponseEntity<Object> validateUser(String email, String password);
 
 	List<Users> allUsers();
 
-	String userDelete(Long id);
+	ResponseEntity<Object> userDelete(Long id);
 
-	String updateUser(Long userId, UserDto userDto);
+	ResponseEntity<Object> updateUser(Long userId, UserDto userDto);
 
 	Collection<String> getAllUsers();
 
